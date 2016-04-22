@@ -1,4 +1,4 @@
-	var config = {
+	var con = {
 	    els2ani: [],
 	    mousewheelEvt: (/Firefox/i.test(navigator.userAgent)) ? 'DOMMouseScroll' : 'mousewheel',
 	    appendStickyMenu: function() {
@@ -13,16 +13,16 @@
 	            insideEl.querySelector('h3').innerHTML = document.querySelector('h1 span').innerHTML + insideEl.querySelector('h3').innerHTML;
 	            document.body.appendChild(newEl);
 	            document.getElementById('stickingMenu').appendChild(insideEl);
-	            config.animate(document.getElementById('stickingMenu'), 60, 0.03);
+	            con.animate(document.getElementById('stickingMenu'), 60, 0.03);
 	        } else if (document.getElementById('stickingMenu').style.opacity == "0") {
-	            config.animate(document.getElementById('stickingMenu'), 60, 0.03);
+	            con.animate(document.getElementById('stickingMenu'), 60, 0.03);
 	        }
 	    },
 	    restore: function() {
 	        var el = document.getElementById('stickingMenu'),
 	            opacity = el && el.style.opacity;
 	        if (opacity > '0' && opacity | 0 == 1) {
-	            config.animate(el, 100, 0.3, true);
+	            con.animate(el, 100, 0.3, true);
 	        }
 	    },
 	    scrollTop: function() {
@@ -31,16 +31,16 @@
 	    stickerEngine: function() {
 	        var el = document.querySelector('h3'),
 	            marginTop = parseInt(window.getComputedStyle(el, null)['marginTop'].match(/\d+/g)[0]);
-	        if (config.scrollTop() > el.offsetTop - el.scrollHeight) {
-	            config.appendStickyMenu();
+	        if (con.scrollTop() > el.offsetTop - el.scrollHeight) {
+	            con.appendStickyMenu();
 	        }
-	        if (config.scrollTop() < (el.offsetTop + el.scrollHeight + marginTop)) {
-	            config.restore();
-	            config.deanimate();
+	        if (con.scrollTop() < (el.offsetTop + el.scrollHeight + marginTop)) {
+	            con.restore();
+	            con.deanimate();
 	        }
 	    },
 	    deanimate: function() {
-	        config.els2ani.forEach(function(i) {
+	        con.els2ani.forEach(function(i) {
 	            i.style.opacity = '0.2';
 	        });
 	    },
@@ -66,7 +66,7 @@
 	        }, time);
 	    },
 	    handler: function(e) {
-	        var _config = {
+	        var _con = {
 	            runOnce: false,
 	            event: window.event || e,
 	            delta: (window.event || e).detail ? (window.event || e).detail * (-120) : (window.event || e).wheelDelta,
@@ -80,19 +80,19 @@
 	                return window.innerHeight + 30 + (window.scrollY ? window.scrollY : window.pageYOffset) >= document.body.offsetHeight;
 	            },
 	            ani4short: function() {
-	                config.els2ani.forEach(function(i) {
-	                    config.animate(i, 110, 0.03);
+	                con.els2ani.forEach(function(i) {
+	                    con.animate(i, 110, 0.03);
 	                });
 	            }	            
 	        };
-	        _config.delta ? (_config.upwards() && !config.scrollTop() ? config.deanimate() :
-	                (_config.downwards() && _config.isAllTheWayDown() ? _config.ani4short() : '')) :
-	            (config.scrollTop() ? _config.ani4short() : config.deanimate());	        
-				config.stickerEngine();
+	        _con.delta ? (_con.upwards() && !con.scrollTop() ? con.deanimate() :
+	                (_con.downwards() && _con.isAllTheWayDown() ? _con.ani4short() : '')) :
+	            (con.scrollTop() ? _con.ani4short() : con.deanimate());	        
+				con.stickerEngine();
 	    },
 	    domReady: function(callback) {
-	        config.eventsBinder(document, 'DOMContentLoaded', callback);
-	        config.eventsBinder(document, 'onreadystatechange', function() {
+	        con.eventsBinder(document, 'DOMContentLoaded', callback);
+	        con.eventsBinder(document, 'onreadystatechange', function() {
 	            if (document.readyState === 'complete') {
 	                callback();
 	            }
@@ -106,10 +106,10 @@
 	        }
 	    }
 	};
-	config.domReady(function() {
-	    config.els2ani.push(document.querySelector('tr[class="c74"]'));
-	    config.eventsBinder(document, config.mousewheelEvt, config.handler);
-	    config.eventsBinder(document, 'keyup', config.handler);
-	    config.eventsBinder(document, 'mousedown', config.handler);
-	    config.eventsBinder(document, 'touchend', config.handler);
+	con.domReady(function() {
+	    con.els2ani.push(document.querySelector('tr[class="c74"]'));
+	    con.eventsBinder(document, con.mousewheelEvt, con.handler);
+	    con.eventsBinder(document, 'keyup', con.handler);
+	    con.eventsBinder(document, 'mousedown', con.handler);
+	    con.eventsBinder(document, 'touchend', con.handler);
 	});
