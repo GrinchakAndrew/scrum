@@ -1,115 +1,134 @@
-	var con = {
-	    els2ani: [],
-	    mousewheelEvt: (/Firefox/i.test(navigator.userAgent)) ? 'DOMMouseScroll' : 'mousewheel',
-	    appendStickyMenu: function() {
-	        if (!document.getElementById('stickingMenu')) {
-	            var newEl = document.createElement('div'),
-	                insideEl = document.createElement('div');
-	            newEl.id = "stickingMenu";
-	            insideEl.id = "washer";
-	            newEl.style.opacity = '0.2';
-	            insideEl.style.width = document.querySelector('table').offsetWidth + 'px';
-	            insideEl.appendChild(document.querySelector('h3').cloneNode(true));
-	            insideEl.querySelector('h3').innerHTML = document.querySelector('h1 span').innerHTML + insideEl.querySelector('h3').innerHTML;
-	            document.body.appendChild(newEl);
-	            document.getElementById('stickingMenu').appendChild(insideEl);
-	            con.animate(document.getElementById('stickingMenu'), 60, 0.03);
-	        } else if (document.getElementById('stickingMenu').style.opacity == "0") {
-	            con.animate(document.getElementById('stickingMenu'), 60, 0.03);
-	        }
-	    },
-	    restore: function() {
-	        var el = document.getElementById('stickingMenu'),
-	            opacity = el && el.style.opacity;
-	        if (opacity > '0' && opacity | 0 == 1) {
-	            con.animate(el, 100, 0.3, true);
-	        }
-	    },
-	    scrollTop: function() {
-	        return (document.body.scrollTop || document.documentElement.scrollTop);
-	    },
-	    stickerEngine: function() {
-	        var el = document.querySelector('h3'),
-	            marginTop = parseInt(window.getComputedStyle(el, null)['marginTop'].match(/\d+/g)[0]);
-	        if (con.scrollTop() > el.offsetTop - el.scrollHeight) {
-	            con.appendStickyMenu();
-	        }
-	        if (con.scrollTop() < (el.offsetTop + el.scrollHeight + marginTop)) {
-	            con.restore();
-	            con.deanimate();
-	        }
-	    },
-	    deanimate: function() {
-	        con.els2ani.forEach(function(i) {
-	            i.style.opacity = '0.2';
-	        });
-	    },
-	    animate: function(el, time, step, reverse) {
-	        var _interval,
-	            direct = function() {
-	                if (!el.style.opacity.match(/^1[.]/)) {
-	                    el.style.opacity = parseFloat(el.style.opacity) + step;
-	                } else {
-	                    clearInterval(_interval);
-	                }
-	            },
-	            obverse = function() {
-	                if (document.getElementById('stickingMenu').style.opacity > 0) {
-	                    document.getElementById('stickingMenu').style.opacity = parseFloat(document.getElementById('stickingMenu').style.opacity) - step;
-	                } else {
-	                    clearInterval(_interval);
-	                    document.getElementById('stickingMenu').style.opacity = 0;
-	                }
-	            };
-	        _interval = setInterval(function() {
-	            reverse ? obverse() : direct();
-	        }, time);
-	    },
-	    handler: function(e) {
-	        var _con = {
-	            runOnce: false,
-	            event: window.event || e,
-	            delta: (window.event || e).detail ? (window.event || e).detail * (-120) : (window.event || e).wheelDelta,
-	            upwards: function() {
-	                return this.delta >= 120;
-	            },
-	            downwards: function() {
-	                return this.delta <= -120;
-	            },
-	            isAllTheWayDown: function() {
-	                return window.innerHeight + 30 + (window.scrollY ? window.scrollY : window.pageYOffset) >= document.body.offsetHeight;
-	            },
-	            ani4short: function() {
-	                con.els2ani.forEach(function(i) {
-	                    con.animate(i, 110, 0.03);
-	                });
-	            }	            
-	        };
-	        _con.delta ? (_con.upwards() && !con.scrollTop() ? con.deanimate() :
-	                (_con.downwards() && _con.isAllTheWayDown() ? _con.ani4short() : '')) :
-	            (con.scrollTop() ? _con.ani4short() : con.deanimate());	        
-				con.stickerEngine();
-	    },
-	    domReady: function(callback) {
-	        con.eventsBinder(document, 'DOMContentLoaded', callback);
-	        con.eventsBinder(document, 'onreadystatechange', function() {
-	            if (document.readyState === 'complete') {
-	                callback();
-	            }
-	        });
-	    },
-	    eventsBinder: function(El, event, handler) {
-	        if (El && El.addEventListener) {
-	            El.addEventListener(event, handler);
-	        } else if (El && El.attachEvent) {
-	            El.attachEvent('on' + event, handler);
-	        }
-	    }
-	};
-	con.domReady(function() {
-	    con.els2ani.push(document.querySelector('tr[class="c74"]'));
-	    con.eventsBinder(document, con.mousewheelEvt, con.handler);
-	    con.eventsBinder(document, 'keyup', con.handler);
-	    con.eventsBinder(document, 'mousedown', con.handler);
-	    con.eventsBinder(document, 'touchend', con.handler);
-	});
+var config = {
+    animationConstruct: function(els2ani, aniTriggerEl) {
+        return {
+			init : function(){
+				this.deanimate();
+				document.body.style.opacity = '0.2';
+				this.animate(document.body, 110, 0.06);
+			},
+            mousewheelEvt: (/Firefox/i.test(navigator.userAgent)) ? 'DOMMouseScroll' : 'mousewheel',
+			appendStickyMenu: function() {
+                if (!document.getElementById('stickingMenu')) {
+                    var newEl = document.createElement('div'),
+                        insideEl = document.createElement('div'),
+                        clone = document.querySelectorAll('p[class=c41]')[0].cloneNode(1);
+                    newEl.id = "stickingMenu";
+                    insideEl.id = "washer";
+                    newEl.style.opacity = '0.2';
+                    insideEl.appendChild(clone);
+                    newEl.appendChild(insideEl);
+                    this.stickingMenu = newEl;
+                    document.body.appendChild(newEl);
+                    this.animate(document.getElementById('stickingMenu'), 60, 0.03);
+                } else if (document.getElementById('stickingMenu').style.opacity == "0") {
+                    this.animate(document.getElementById('stickingMenu'), 60, 0.03);
+                }
+            },
+            stickingMenu: '',
+            restore: function() {
+                var el = document.getElementById('stickingMenu'),
+                    opacity = el && el.style.opacity;
+                if (opacity > '0' && opacity | 0 == 1) {
+                    this.animate(el, 100, 0.3, true);
+                }
+            },
+			scrollTopCurrentData : Number(),
+            scrollTop: function() {
+                return (document.body.scrollTop || document.documentElement.scrollTop);
+            },
+            stickerEngine: function() {
+                this.appendStickyMenu();
+            },
+            deanimate: function() {
+                els2ani.forEach(function(i) {
+                    i.style.opacity = '0.2';
+                });
+            },
+            aniNonActiveState: function() {
+                return this.stickingMenu && this.stickingMenu.style.opacity > 1;
+            },
+            animate: function(el, time, step, reverse) {
+                var _interval,
+                    direct = function() {
+                        if (!el.style.opacity.match(/^1[.]/)) {
+                            el.style.opacity = parseFloat(el.style.opacity) + step;
+                        } else {
+                            clearInterval(_interval);
+                        }
+                    },
+                    obverse = function() {
+                        if (document.getElementById('stickingMenu').style.opacity > 0) {
+                            document.getElementById('stickingMenu').style.opacity = parseFloat(document.getElementById('stickingMenu').style.opacity) - step;
+                        } else {
+                            clearInterval(_interval);
+                            document.getElementById('stickingMenu').style.opacity = 0;
+                        }
+                    };
+                _interval = setInterval(function() {
+                    reverse ? obverse() : direct();
+                }, time);
+            },
+            handler: function(e) {
+				var _config = {
+                    runOnce: false,
+                    event: window.event || e,
+                    delta: (window.event || e).type == config.instance.mousewheelEvt && (window.event || e).detail ? (window.event || e).detail * (-120) : (window.event || e).type == config.instance.mousewheelEvt && (window.event || e).wheelDelta,
+                    upwards: function() {
+                        return this.delta ? this.delta >= 120 : config.instance.scrollTopCurrentData > config.instance.scrollTop();
+                    },
+                    downwards: function() {
+                        return this.delta ? this.delta <= -120 : config.instance.scrollTopCurrentData < config.instance.scrollTop();
+                    },
+                    isAllTheWayDown: function() {
+                        return window.innerHeight + 30 + (window.scrollY ? window.scrollY : window.pageYOffset) >= document.body.offsetHeight;
+                    },
+                    ani4short: function() {
+                        els2ani.forEach(function(i) {
+                            config.instance.animate(i, 110, 0.03);
+                        });
+                    }
+                };
+				
+				if (_config.downwards() && config.instance.scrollTop() > aniTriggerEl.offsetTop - aniTriggerEl.scrollHeight) {
+					
+					_config.isAllTheWayDown() ? _config.ani4short() : config.instance.stickerEngine();
+                }
+				
+				if(_config.upwards() && config.instance.aniNonActiveState()) {
+					config.instance.restore();
+					config.instance.deanimate();
+				}
+				
+				
+				config.instance.scrollTopCurrentData = config.instance.scrollTop();
+				
+				config.instance.scrollTopCurrentData = config.instance.scrollTop();
+            }
+        }
+    },
+    domReady: function(callback) {
+        config.eventsBinder(document, 'DOMContentLoaded', callback);
+        config.eventsBinder(document, 'onreadystatechange', function() {
+            if (document.readyState === 'complete') {
+                callback();
+            }
+        });
+    },
+    eventsBinder: function(El, event, handler) {
+        if (El && El.addEventListener) {
+            El.addEventListener(event, handler);
+		} else if (El && El.attachEvent) {
+            El.attachEvent('on' + event, handler);
+        }
+    }
+};
+
+config.domReady(function() {
+	config.instance = new config.animationConstruct([document.querySelectorAll('tr[class=c19] td[class*=c70]')[document.querySelectorAll('tr[class=c19] td[class*=c70]').length-1], document.querySelectorAll('tr[class=c19] td[class*=c9]')[document.querySelectorAll('tr[class=c19] td[class*=c9]').length-1]], document.querySelectorAll('tr[class=c19]')[document.querySelectorAll('tr[class=c19]').length-2]);
+	config.instance.init();
+	config.eventsBinder(document, config.instance.mousewheelEvt, config.instance.handler);
+	config.eventsBinder(document, 'keyup', config.instance.handler);
+	config.eventsBinder(document, 'mousedown', config.instance.handler);	
+	config.eventsBinder(document, 'touchend', config.instance.handler);
+	config.eventsBinder(window, 'touchend', config.instance.handler);
+});
